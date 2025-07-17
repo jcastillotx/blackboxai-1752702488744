@@ -24,6 +24,9 @@ jQuery(document).ready(function($) {
         initializeCharts();
     }
     
+    // Initialize new dashboard widgets
+    initializeDashboardWidgets();
+    
     // AJAX form submissions
     setupAjaxForms();
     
@@ -320,6 +323,117 @@ function initializeCharts() {
                 }
             }
         });
+    }
+    
+    // Engagement Chart
+    var engagementCtx = document.getElementById('engagementChart');
+    if (engagementCtx) {
+        new Chart(engagementCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Engagement',
+                    data: [30, 40, 35, 50, 49, 60, 70],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+/**
+ * Initialize dashboard widgets functionality
+ */
+function initializeDashboardWidgets() {
+    // Widget hover effects
+    jQuery('.smm-widget').hover(
+        function() {
+            jQuery(this).addClass('widget-hover');
+        },
+        function() {
+            jQuery(this).removeClass('widget-hover');
+        }
+    );
+    
+    // Quick action buttons
+    jQuery('.smm-action-item button').on('click', function(e) {
+        var $btn = jQuery(this);
+        var originalText = $btn.text();
+        
+        if ($btn.hasClass('smm-ask-ai')) {
+            // AI functionality is handled separately
+            return;
+        }
+        
+        // Add loading state for other buttons
+        $btn.prop('disabled', true).text('Loading...');
+        
+        setTimeout(function() {
+            $btn.prop('disabled', false).text(originalText);
+        }, 1000);
+    });
+    
+    // Auto-refresh widgets every 5 minutes
+    setInterval(function() {
+        refreshWidgetData();
+    }, 300000); // 5 minutes
+}
+
+/**
+ * Refresh widget data via AJAX
+ */
+function refreshWidgetData() {
+    jQuery.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_refresh_dashboard_data',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                updateWidgetValues(response.data);
+            }
+        },
+        error: function() {
+            console.log('Failed to refresh dashboard data');
+        }
+    });
+}
+
+/**
+ * Update widget values with new data
+ */
+function updateWidgetValues(data) {
+    if (data.total_clients) {
+        jQuery('.smm-widget:contains("Total Clients") .smm-metric-value').text(data.total_clients);
+    }
+    if (data.new_clients) {
+        jQuery('.smm-widget:contains("New Clients") .smm-metric-value').text(data.new_clients);
+    }
+    if (data.total_revenue) {
+        jQuery('.smm-widget:contains("Revenue") .smm-metric-value').text('$' + parseFloat(data.total_revenue).toFixed(2));
+    }
+    if (data.pending_posts) {
+        jQuery('.stat-number').text(data.pending_posts);
     }
 }
 
