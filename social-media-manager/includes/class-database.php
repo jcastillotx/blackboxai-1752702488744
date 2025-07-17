@@ -16,6 +16,11 @@ class SMM_Database {
     public function create_tables() {
         global $wpdb;
         
+        if (!isset($wpdb)) {
+            error_log('SMM Plugin Error: global $wpdb not available.');
+            return false;
+        }
+        
         $charset_collate = $wpdb->get_charset_collate();
         
         // Clients table
@@ -135,12 +140,26 @@ class SMM_Database {
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         
-        dbDelta($clients_sql);
-        dbDelta($campaigns_sql);
-        dbDelta($posts_sql);
-        dbDelta($analytics_sql);
-        dbDelta($timesheets_sql);
-        dbDelta($messages_sql);
+        // Create tables with error logging
+        $tables = array(
+            'clients' => $clients_sql,
+            'campaigns' => $campaigns_sql,
+            'posts' => $posts_sql,
+            'analytics' => $analytics_sql,
+            'timesheets' => $timesheets_sql,
+            'messages' => $messages_sql
+        );
+        
+        foreach ($tables as $table_name => $sql) {
+            $result = dbDelta($sql);
+            if (empty($result)) {
+                error_log("SMM Plugin Error: Failed to create {$table_name} table");
+            } else {
+                error_log("SMM Plugin: Successfully created/updated {$table_name} table");
+            }
+        }
+        
+        return true;
     }
     
     public function get_client_data($client_id) {
