@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin dashboard management class
+ * Admin dashboard management class - Redesigned
  */
 
 if (!defined('ABSPATH')) {
@@ -12,6 +12,7 @@ class SMM_Admin {
     public function __construct() {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'admin_init'));
+        add_action('wp_ajax_smm_filter_posts', array($this, 'ajax_filter_posts'));
     }
     
     public function add_admin_menu() {
@@ -45,24 +46,6 @@ class SMM_Admin {
         
         add_submenu_page(
             'social-media-manager',
-            'Campaigns',
-            'Campaigns',
-            'manage_options',
-            'smm-campaigns',
-            array($this, 'campaigns_page')
-        );
-        
-        add_submenu_page(
-            'social-media-manager',
-            'Analytics',
-            'Analytics',
-            'manage_options',
-            'smm-analytics',
-            array($this, 'analytics_page')
-        );
-        
-        add_submenu_page(
-            'social-media-manager',
             'Settings',
             'Settings',
             'manage_options',
@@ -78,256 +61,283 @@ class SMM_Admin {
     public function admin_page() {
         ?>
         <div class="wrap smm-admin-wrap">
-            <div class="smm-dashboard-header">
-                <div class="smm-logo">
-                    <h1>yourLOGO</h1>
-                </div>
-                <div class="smm-client-selector">
-                    <select class="smm-client-dropdown">
-                        <option>My Client</option>
-                    </select>
-                </div>
-                <div class="smm-header-actions">
-                    <button class="smm-btn smm-btn-secondary">Ask AI</button>
-                    <select class="smm-date-range">
-                        <option>Last 30 Days</option>
-                    </select>
-                    <button class="smm-btn smm-btn-primary">Edit Dashboard</button>
-                </div>
-            </div>
-            
-            <div class="smm-dashboard-nav">
-                <ul class="nav-tabs">
-                    <li class="active"><a href="#overview" data-tab="overview">Overview</a></li>
-                    <li><a href="#dashboard" data-tab="dashboard">Dashboard</a></li>
-                    <li><a href="#activity" data-tab="activity">Activity</a></li>
-                    <li><a href="#tasks" data-tab="tasks">Tasks</a></li>
-                    <li><a href="#goals" data-tab="goals">Goals</a></li>
-                </ul>
-            </div>
-            
-            <div class="smm-dashboard-content">
-                <div id="overview" class="tab-content active">
-                    <?php $this->render_overview_tab(); ?>
-                </div>
-                <div id="dashboard" class="tab-content">
-                    <?php $this->render_dashboard_tab(); ?>
-                </div>
-                <div id="activity" class="tab-content">
-                    <?php $this->render_activity_tab(); ?>
-                </div>
-                <div id="tasks" class="tab-content">
-                    <?php $this->render_tasks_tab(); ?>
-                </div>
-                <div id="goals" class="tab-content">
-                    <?php $this->render_goals_tab(); ?>
-                </div>
-            </div>
+            <h1>Social Media Manager Dashboard</h1>
+            <?php $this->render_dashboard(); ?>
         </div>
+        
+        <style>
+        .smm-dashboard-overview {
+            margin: 20px 0;
+        }
+        .smm-metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .smm-metric-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .smm-metric-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .smm-metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+        .smm-api-status {
+            margin-top: 10px;
+        }
+        .smm-api-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .smm-api-indicator.connected {
+            color: #28a745;
+        }
+        .smm-api-indicator.disconnected {
+            color: #dc3545;
+        }
+        .smm-posts-management {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .smm-posts-section {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .smm-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .smm-filters select {
+            margin-left: 10px;
+            padding: 5px;
+        }
+        .smm-posts-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .smm-posts-table th,
+        .smm-posts-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .smm-posts-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .smm-bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .smm-messages-section,
+        .smm-invoices-section {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .smm-messages-list,
+        .smm-invoices-table {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .smm-message-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .smm-message-item:last-child {
+            border-bottom: none;
+        }
+        .smm-message-unread {
+            font-weight: bold;
+        }
+        </style>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // Filter functionality for posts
+            $('.smm-filters select').on('change', function() {
+                var section = $(this).closest('.smm-posts-section');
+                var status = section.find('h3').text().toLowerCase().includes('approved') ? 'approved' : 'pending';
+                var dateFilter = section.find('[id*="date-filter"]').val();
+                var platformFilter = section.find('[id*="platform-filter"]').val();
+                var clientFilter = section.find('[id*="client-filter"]').val();
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'smm_filter_posts',
+                        status: status,
+                        date_range: dateFilter,
+                        platform: platformFilter,
+                        client_id: clientFilter,
+                        nonce: '<?php echo wp_create_nonce('smm_filter_posts'); ?>'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            section.find('.smm-posts-table').html(response.data);
+                        }
+                    }
+                });
+            });
+        });
+        </script>
         <?php
     }
     
-    private function render_overview_tab() {
+    private function render_dashboard() {
+        global $wpdb;
+        
+        // Get dashboard data
+        $total_clients = $this->get_total_clients();
+        $new_clients = $this->get_new_clients();
+        $total_revenue = $this->get_total_revenue();
+        $api_status = $this->get_api_status();
+        
         ?>
-        <div class="smm-overview-grid">
-            <!-- First Row -->
-            <div class="smm-widget-row">
-                <div class="smm-widget smm-widget-third">
-                    <div class="smm-widget-header">
-                        <h3>Rankings</h3>
-                    </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-rankings-grid">
-                            <div class="smm-metric-card">
-                                <div class="smm-metric-icon">📊</div>
-                                <div class="smm-metric-info">
-                                    <h4>Google Rankings</h4>
-                                    <div class="smm-metric-value large">10</div>
-                                </div>
-                            </div>
-                            <div class="smm-metric-card">
-                                <div class="smm-metric-icon">📈</div>
-                                <div class="smm-metric-info">
-                                    <h4>Google Change</h4>
-                                    <div class="smm-metric-value large positive">▲ 4</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="smm-rankings-chart">
-                            <canvas id="rankingsChart"></canvas>
-                        </div>
+        <div class="smm-dashboard-overview">
+            <!-- Key Metrics Row -->
+            <div class="smm-metrics-row">
+                <div class="smm-metric-card">
+                    <div class="smm-metric-icon">👥</div>
+                    <div class="smm-metric-info">
+                        <h3>Total Clients</h3>
+                        <div class="smm-metric-value"><?php echo esc_html($total_clients); ?></div>
                     </div>
                 </div>
                 
-                <div class="smm-widget smm-widget-third">
-                    <div class="smm-widget-header">
-                        <h3>Google Analytics</h3>
-                    </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-sessions-display">
-                            <div class="smm-sessions-chart">
-                                <canvas id="sessionsChart"></canvas>
-                            </div>
-                            <div class="smm-sessions-center">
-                                <div class="smm-sessions-number">2,787</div>
-                                <div class="smm-sessions-label">Sessions</div>
-                            </div>
-                        </div>
-                        <div class="smm-sessions-legend">
-                            <div class="legend-item"><span class="color-dot referral"></span> Referral - 602</div>
-                            <div class="legend-item"><span class="color-dot organic"></span> Organic Search - 573</div>
-                            <div class="legend-item"><span class="color-dot direct"></span> Direct - 564</div>
-                            <div class="legend-item"><span class="color-dot other"></span> Other - 410</div>
-                            <div class="legend-item"><span class="color-dot paid"></span> Paid Search - 212</div>
-                            <div class="legend-item"><span class="color-dot social"></span> Social - 178</div>
-                            <div class="legend-item"><span class="color-dot display"></span> Display - 126</div>
-                            <div class="legend-item"><span class="color-dot email"></span> Email - 122</div>
-                        </div>
+                <div class="smm-metric-card">
+                    <div class="smm-metric-icon">✨</div>
+                    <div class="smm-metric-info">
+                        <h3>New Clients (30 days)</h3>
+                        <div class="smm-metric-value"><?php echo esc_html($new_clients); ?></div>
                     </div>
                 </div>
                 
-                <div class="smm-widget smm-widget-third">
-                    <div class="smm-widget-header">
-                        <h3>Google Ads</h3>
+                <div class="smm-metric-card">
+                    <div class="smm-metric-icon">💰</div>
+                    <div class="smm-metric-info">
+                        <h3>Revenue (30 days)</h3>
+                        <div class="smm-metric-value">$<?php echo esc_html(number_format($total_revenue, 2)); ?></div>
                     </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-conversions-display">
-                            <div class="smm-metric-icon">▲</div>
-                            <div class="smm-metric-info">
-                                <h4>Conversions</h4>
-                                <div class="smm-metric-value xlarge">4,414</div>
-                            </div>
-                        </div>
-                        <div class="smm-conversions-chart">
-                            <canvas id="conversionsChart"></canvas>
+                </div>
+                
+                <div class="smm-metric-card">
+                    <div class="smm-metric-icon">🔗</div>
+                    <div class="smm-metric-info">
+                        <h3>API Status</h3>
+                        <div class="smm-api-status">
+                            <?php foreach ($api_status as $api => $status): ?>
+                                <div class="smm-api-item">
+                                    <span class="smm-api-name"><?php echo esc_html(ucfirst($api)); ?></span>
+                                    <span class="smm-api-indicator <?php echo $status ? 'connected' : 'disconnected'; ?>">
+                                        <?php echo $status ? '●' : '●'; ?>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Second Row -->
-            <div class="smm-widget-row">
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-header">
-                        <h3>Instagram</h3>
-                    </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-card">
-                            <div class="smm-metric-icon">👥</div>
-                            <div class="smm-metric-info">
-                                <h4>Followers</h4>
-                                <div class="smm-metric-value xlarge">3,306</div>
-                            </div>
+            <!-- Posts Management Row -->
+            <div class="smm-posts-management">
+                <div class="smm-posts-section">
+                    <div class="smm-section-header">
+                        <h3>Approved Posts</h3>
+                        <div class="smm-filters">
+                            <select id="approved-date-filter">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                            <select id="approved-platform-filter">
+                                <option value="">All Platforms</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                            <select id="approved-client-filter">
+                                <option value="">All Clients</option>
+                                <?php echo $this->get_client_options(); ?>
+                            </select>
                         </div>
                     </div>
-                </div>
-                
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-header">
-                        <h3>Google Business Profile</h3>
-                    </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-rating-display">
-                            <div class="smm-rating-circle">
-                                <canvas id="ratingChart"></canvas>
-                                <div class="smm-rating-center">4.75</div>
-                            </div>
-                            <div class="smm-rating-info">
-                                <h4>Average Rating</h4>
-                            </div>
-                        </div>
-                        <div class="smm-metric-card">
-                            <div class="smm-metric-icon">👥</div>
-                            <div class="smm-metric-info">
-                                <h4>Reviews</h4>
-                                <div class="smm-metric-value large">587</div>
-                            </div>
-                        </div>
+                    <div class="smm-posts-table" id="approved-posts-table">
+                        <?php echo $this->render_posts_table('approved'); ?>
                     </div>
                 </div>
                 
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-header">
-                        <h3>Salesforce</h3>
+                <div class="smm-posts-section">
+                    <div class="smm-section-header">
+                        <h3>Pending Posts</h3>
+                        <div class="smm-filters">
+                            <select id="pending-date-filter">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                            <select id="pending-platform-filter">
+                                <option value="">All Platforms</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                            <select id="pending-client-filter">
+                                <option value="">All Clients</option>
+                                <?php echo $this->get_client_options(); ?>
+                            </select>
+                        </div>
                     </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-card">
-                            <div class="smm-metric-icon">💼</div>
-                            <div class="smm-metric-info">
-                                <h4>Leads</h4>
-                                <div class="smm-metric-value xlarge">95,293</div>
-                            </div>
-                        </div>
-                        <div class="smm-trend-line">
-                            <canvas id="leadsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-header">
-                        <h3>Google Search Console</h3>
-                    </div>
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-card">
-                            <div class="smm-metric-icon">👁️</div>
-                            <div class="smm-metric-info">
-                                <h4>Impressions</h4>
-                                <div class="smm-metric-value xlarge">262 K</div>
-                            </div>
-                        </div>
-                        <div class="smm-trend-line">
-                            <canvas id="impressionsChart"></canvas>
-                        </div>
+                    <div class="smm-posts-table" id="pending-posts-table">
+                        <?php echo $this->render_posts_table('pending'); ?>
                     </div>
                 </div>
             </div>
             
-            <!-- Third Row -->
-            <div class="smm-widget-row">
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-icon">📊</div>
-                        <div class="smm-metric-info">
-                            <h4>Sessions</h4>
-                            <div class="smm-metric-value xxlarge">2,787</div>
-                        </div>
+            <!-- Communication & Invoices Row -->
+            <div class="smm-bottom-row">
+                <div class="smm-messages-section">
+                    <div class="smm-section-header">
+                        <h3>Latest Messages</h3>
+                    </div>
+                    <div class="smm-messages-list">
+                        <?php echo $this->render_latest_messages(); ?>
                     </div>
                 </div>
                 
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-icon">🎯</div>
-                        <div class="smm-metric-info">
-                            <h4>Goal Completions</h4>
-                            <div class="smm-metric-value xxlarge">3,306</div>
-                        </div>
+                <div class="smm-invoices-section">
+                    <div class="smm-section-header">
+                        <h3>Latest Invoices</h3>
                     </div>
-                </div>
-                
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-icon">💰</div>
-                        <div class="smm-metric-info">
-                            <h4>Cost</h4>
-                            <div class="smm-metric-value xxlarge">$6,596.00</div>
-                        </div>
-                        <div class="smm-mini-chart">
-                            <canvas id="costChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="smm-widget smm-widget-quarter">
-                    <div class="smm-widget-content">
-                        <div class="smm-metric-icon">📈</div>
-                        <div class="smm-metric-info">
-                            <h4>CTR</h4>
-                            <div class="smm-metric-value xxlarge">3.20%</div>
-                        </div>
-                        <div class="smm-mini-chart">
-                            <canvas id="ctrChart"></canvas>
-                        </div>
+                    <div class="smm-invoices-table">
+                        <?php echo $this->render_latest_invoices(); ?>
                     </div>
                 </div>
             </div>
@@ -335,50 +345,219 @@ class SMM_Admin {
         <?php
     }
     
-    private function render_dashboard_tab() {
-        echo '<div class="smm-tab-content">';
-        echo '<h2>Dashboard Analytics</h2>';
-        echo '<p>Detailed analytics and reporting dashboard will be displayed here.</p>';
-        echo '</div>';
+    private function get_total_clients() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'smm_clients';
+        return $wpdb->get_var("SELECT COUNT(*) FROM $table");
     }
     
-    private function render_activity_tab() {
-        echo '<div class="smm-tab-content">';
-        echo '<h2>Recent Activity</h2>';
-        echo '<p>Recent social media activities and updates will be displayed here.</p>';
-        echo '</div>';
+    private function get_new_clients() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'smm_clients';
+        return $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
     }
     
-    private function render_tasks_tab() {
-        echo '<div class="smm-tab-content">';
-        echo '<h2>Tasks Management</h2>';
-        echo '<p>Task management and scheduling interface will be displayed here.</p>';
-        echo '</div>';
+    private function get_total_revenue() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'smm_invoices';
+        $result = $wpdb->get_var("SELECT SUM(amount) FROM $table WHERE status = 'paid' AND paid_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+        return $result ? $result : 0;
     }
     
-    private function render_goals_tab() {
-        echo '<div class="smm-tab-content">';
-        echo '<h2>Goals & Objectives</h2>';
-        echo '<p>Goals tracking and performance metrics will be displayed here.</p>';
-        echo '</div>';
+    private function get_api_status() {
+        $settings = get_option('smm_settings', array());
+        return array(
+            'chatgpt' => !empty($settings['chatgpt_api_key']),
+            'facebook' => !empty($settings['facebook_api_key']),
+            'instagram' => !empty($settings['instagram_api_key']),
+            'twitter' => !empty($settings['twitter_api_key']),
+            'linkedin' => !empty($settings['linkedin_api_key'])
+        );
+    }
+    
+    private function get_client_options() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'smm_clients';
+        $clients = $wpdb->get_results("SELECT id, company_name FROM $table ORDER BY company_name");
+        
+        $options = '';
+        foreach ($clients as $client) {
+            $options .= '<option value="' . esc_attr($client->id) . '">' . esc_html($client->company_name) . '</option>';
+        }
+        return $options;
+    }
+    
+    private function render_posts_table($status, $date_range = 30, $platform = '', $client_id = '') {
+        global $wpdb;
+        $posts_table = $wpdb->prefix . 'smm_posts';
+        $clients_table = $wpdb->prefix . 'smm_clients';
+        
+        $where_conditions = array("p.status = %s");
+        $params = array($status);
+        
+        if ($date_range) {
+            $where_conditions[] = "p.created_at >= DATE_SUB(NOW(), INTERVAL %d DAY)";
+            $params[] = $date_range;
+        }
+        
+        if ($platform) {
+            $where_conditions[] = "p.platform = %s";
+            $params[] = $platform;
+        }
+        
+        if ($client_id) {
+            $where_conditions[] = "p.client_id = %d";
+            $params[] = $client_id;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+        
+        $sql = "SELECT p.*, c.company_name 
+                FROM $posts_table p 
+                LEFT JOIN $clients_table c ON p.client_id = c.id 
+                WHERE $where_clause 
+                ORDER BY p.created_at DESC 
+                LIMIT 10";
+        
+        $posts = $wpdb->get_results($wpdb->prepare($sql, $params));
+        
+        ob_start();
+        ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Platform</th>
+                    <th>Content</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($posts): ?>
+                    <?php foreach ($posts as $post): ?>
+                        <tr>
+                            <td><?php echo esc_html($post->company_name ?: 'Unknown'); ?></td>
+                            <td><?php echo esc_html(ucfirst($post->platform)); ?></td>
+                            <td><?php echo esc_html(wp_trim_words($post->post_content, 10)); ?></td>
+                            <td><?php echo esc_html(date('M j, Y', strtotime($post->created_at))); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4">No posts found</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        <?php
+        return ob_get_clean();
+    }
+    
+    private function render_latest_messages() {
+        global $wpdb;
+        $messages_table = $wpdb->prefix . 'smm_messages';
+        $clients_table = $wpdb->prefix . 'smm_clients';
+        
+        $sql = "SELECT m.*, c.company_name 
+                FROM $messages_table m 
+                LEFT JOIN $clients_table c ON m.client_id = c.id 
+                ORDER BY m.created_at DESC 
+                LIMIT 10";
+        
+        $messages = $wpdb->get_results($sql);
+        
+        ob_start();
+        if ($messages):
+            foreach ($messages as $message):
+                $unread_class = $message->is_read ? '' : 'smm-message-unread';
+                ?>
+                <div class="smm-message-item <?php echo $unread_class; ?>">
+                    <div class="smm-message-content">
+                        <strong><?php echo esc_html($message->company_name ?: 'Unknown Client'); ?></strong>
+                        <p><?php echo esc_html(wp_trim_words($message->message_content, 15)); ?></p>
+                    </div>
+                    <div class="smm-message-date">
+                        <?php echo esc_html(date('M j', strtotime($message->created_at))); ?>
+                    </div>
+                </div>
+                <?php
+            endforeach;
+        else:
+            echo '<p>No messages found</p>';
+        endif;
+        return ob_get_clean();
+    }
+    
+    private function render_latest_invoices() {
+        global $wpdb;
+        $invoices_table = $wpdb->prefix . 'smm_invoices';
+        $clients_table = $wpdb->prefix . 'smm_clients';
+        
+        $sql = "SELECT i.*, c.company_name 
+                FROM $invoices_table i 
+                LEFT JOIN $clients_table c ON i.client_id = c.id 
+                ORDER BY i.created_at DESC 
+                LIMIT 10";
+        
+        $invoices = $wpdb->get_results($sql);
+        
+        ob_start();
+        ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Client</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($invoices): ?>
+                    <?php foreach ($invoices as $invoice): ?>
+                        <tr>
+                            <td><?php echo esc_html($invoice->invoice_number); ?></td>
+                            <td><?php echo esc_html($invoice->company_name ?: 'Unknown'); ?></td>
+                            <td>$<?php echo esc_html(number_format($invoice->amount, 2)); ?></td>
+                            <td><?php echo esc_html(ucfirst($invoice->status)); ?></td>
+                            <td><?php echo esc_html(date('M j, Y', strtotime($invoice->created_at))); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5">No invoices found</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        <?php
+        return ob_get_clean();
+    }
+    
+    public function ajax_filter_posts() {
+        check_ajax_referer('smm_filter_posts', 'nonce');
+        
+        $status = sanitize_text_field($_POST['status']);
+        $date_range = intval($_POST['date_range']);
+        $platform = sanitize_text_field($_POST['platform']);
+        $client_id = intval($_POST['client_id']);
+        
+        $html = $this->render_posts_table($status, $date_range, $platform, $client_id);
+        
+        wp_send_json_success($html);
     }
     
     public function clients_page() {
         global $wpdb;
         $table = $wpdb->prefix . 'smm_clients';
 
-        // Pagination parameters
         $paged = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
         $per_page = 10;
         $offset = ($paged - 1) * $per_page;
 
-        // Get total clients count
         $total_clients = $wpdb->get_var("SELECT COUNT(*) FROM $table");
-
-        // Get clients data with pagination
         $clients = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table ORDER BY created_at DESC LIMIT %d OFFSET %d", $per_page, $offset));
-
-        // Calculate total pages
         $total_pages = ceil($total_clients / $per_page);
 
         ?>
@@ -404,8 +583,7 @@ class SMM_Admin {
                                 <td><?php echo esc_html($client->created_at); ?></td>
                                 <td>
                                     <a href="<?php echo admin_url('admin.php?page=smm-clients&action=view&id=' . intval($client->id)); ?>">View</a> |
-                                    <a href="<?php echo admin_url('admin.php?page=smm-clients&action=edit&id=' . intval($client->id)); ?>">Edit</a> |
-                                    <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=smm_delete_client&id=' . intval($client->id)), 'smm_delete_client'); ?>" onclick="return confirm('Are you sure you want to delete this client?');">Delete</a>
+                                    <a href="<?php echo admin_url('admin.php?page=smm-clients&action=edit&id=' . intval($client->id)); ?>">Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -416,114 +594,6 @@ class SMM_Admin {
                     <?php endif; ?>
                 </tbody>
             </table>
-
-            <?php if ($total_pages > 1) : ?>
-                <div class="tablenav">
-                    <div class="tablenav-pages">
-                        <?php
-                        $page_links = paginate_links(array(
-                            'base' => add_query_arg('paged', '%#%'),
-                            'format' => '',
-                            'prev_text' => __('&laquo;'),
-                            'next_text' => __('&raquo;'),
-                            'total' => $total_pages,
-                            'current' => $paged
-                        ));
-                        echo $page_links;
-                        ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-        <?php
-    }
-    
-    public function campaigns_page() {
-        global $wpdb;
-        $table = $wpdb->prefix . 'smm_campaigns';
-
-        // Pagination parameters
-        $paged = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
-        $per_page = 10;
-        $offset = ($paged - 1) * $per_page;
-
-        // Get total campaigns count
-        $total_campaigns = $wpdb->get_var("SELECT COUNT(*) FROM $table");
-
-        // Get campaigns data with pagination
-        $campaigns = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table ORDER BY created_at DESC LIMIT %d OFFSET %d", $per_page, $offset));
-
-        // Calculate total pages
-        $total_pages = ceil($total_campaigns / $per_page);
-
-        ?>
-        <div class="wrap">
-            <h1>Campaigns Management</h1>
-            <table class="wp-list-table widefat fixed striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Client ID</th>
-                        <th>Campaign Name</th>
-                        <th>Platform</th>
-                        <th>Status</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($campaigns) : ?>
-                        <?php foreach ($campaigns as $campaign) : ?>
-                            <tr>
-                                <td><?php echo esc_html($campaign->id); ?></td>
-                                <td><?php echo esc_html($campaign->client_id); ?></td>
-                                <td><?php echo esc_html($campaign->campaign_name); ?></td>
-                                <td><?php echo esc_html($campaign->platform); ?></td>
-                                <td><?php echo esc_html($campaign->status); ?></td>
-                                <td><?php echo esc_html($campaign->start_date); ?></td>
-                                <td><?php echo esc_html($campaign->end_date); ?></td>
-                                <td>
-                                    <a href="<?php echo admin_url('admin.php?page=smm-campaigns&action=view&id=' . intval($campaign->id)); ?>">View</a> |
-                                    <a href="<?php echo admin_url('admin.php?page=smm-campaigns&action=edit&id=' . intval($campaign->id)); ?>">Edit</a> |
-                                    <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=smm_delete_campaign&id=' . intval($campaign->id)), 'smm_delete_campaign'); ?>" onclick="return confirm('Are you sure you want to delete this campaign?');">Delete</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan="8">No campaigns found.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-
-            <?php if ($total_pages > 1) : ?>
-                <div class="tablenav">
-                    <div class="tablenav-pages">
-                        <?php
-                        $page_links = paginate_links(array(
-                            'base' => add_query_arg('paged', '%#%'),
-                            'format' => '',
-                            'prev_text' => __('&laquo;'),
-                            'next_text' => __('&raquo;'),
-                            'total' => $total_pages,
-                            'current' => $paged
-                        ));
-                        echo $page_links;
-                        ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-        <?php
-    }
-    
-    public function analytics_page() {
-        ?>
-        <div class="wrap">
-            <h1>Analytics & Reports</h1>
-            <p>Detailed analytics and reporting interface will be implemented here.</p>
         </div>
         <?php
     }
@@ -582,16 +652,6 @@ class SMM_Admin {
                                    value="<?php echo esc_attr($options['linkedin_api_key'] ?? ''); ?>" 
                                    class="regular-text" />
                             <p class="description">Enter your LinkedIn API key.</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">AI System Prompt</th>
-                        <td>
-                            <textarea name="smm_settings[system_prompt]" 
-                                      rows="10" 
-                                      cols="80" 
-                                      class="large-text"><?php echo esc_textarea($options['system_prompt'] ?? ''); ?></textarea>
-                            <p class="description">Customize the AI system prompt used for generating social media strategies. Leave blank to use the default prompt.</p>
                         </td>
                     </tr>
                 </table>
