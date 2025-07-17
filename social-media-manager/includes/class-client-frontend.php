@@ -477,6 +477,13 @@ class SMM_Client_Frontend {
         }
         
         // Save to database
+        if (!class_exists('SMM_Database')) {
+            wp_send_json_error(array(
+                'message' => 'Database class not available. Please try again.'
+            ));
+            return;
+        }
+        
         $database = new SMM_Database();
         $client_data = array(
             'user_id' => get_current_user_id(),
@@ -516,13 +523,20 @@ class SMM_Client_Frontend {
         
         if ($result) {
             // Generate strategy using ChatGPT
-            $chatgpt = new SMM_ChatGPT_Integration();
-            $strategy = $chatgpt->generate_strategy($intake_data);
-            
-            wp_send_json_success(array(
-                'message' => 'Intake form submitted successfully!',
-                'strategy' => $strategy
-            ));
+            if (class_exists('SMM_ChatGPT_Integration')) {
+                $chatgpt = new SMM_ChatGPT_Integration();
+                $strategy = $chatgpt->generate_strategy($intake_data);
+                
+                wp_send_json_success(array(
+                    'message' => 'Intake form submitted successfully!',
+                    'strategy' => $strategy
+                ));
+            } else {
+                wp_send_json_success(array(
+                    'message' => 'Intake form submitted successfully! Strategy generation is currently unavailable.',
+                    'strategy' => 'Strategy generation service is temporarily unavailable. Please contact support.'
+                ));
+            }
         } else {
             wp_send_json_error(array(
                 'message' => 'Failed to save intake data. Please try again.'
