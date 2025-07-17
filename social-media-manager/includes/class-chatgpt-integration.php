@@ -38,6 +38,14 @@ class SMM_ChatGPT_Integration {
     }
     
     private function get_system_prompt() {
+        $settings = get_option('smm_settings', array());
+        $custom_prompt = $settings['system_prompt'] ?? '';
+        
+        if (!empty($custom_prompt)) {
+            return $custom_prompt;
+        }
+        
+        // Default system prompt
         return "You are an expert social media strategist and marketing consultant with over 10 years of experience helping businesses grow their online presence. Your task is to create comprehensive, actionable social media strategies based on client intake information.
 
 INSTRUCTIONS:
