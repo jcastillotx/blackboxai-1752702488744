@@ -584,6 +584,16 @@ class SMM_Admin {
                             <p class="description">Enter your LinkedIn API key.</p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row">AI System Prompt</th>
+                        <td>
+                            <textarea name="smm_settings[system_prompt]" 
+                                      rows="10" 
+                                      cols="80" 
+                                      class="large-text"><?php echo esc_textarea($options['system_prompt'] ?? ''); ?></textarea>
+                            <p class="description">Customize the AI system prompt used for generating social media strategies. Leave blank to use the default prompt.</p>
+                        </td>
+                    </tr>
                 </table>
                 <?php submit_button(); ?>
             </form>
