@@ -35,6 +35,9 @@ jQuery(document).ready(function($) {
     
     // Setup settings functionality
     setupSettingsFunctionality();
+
+    // Load client dashboard data
+    loadClientDashboardData();
 });
 
 /**
@@ -154,6 +157,254 @@ function initializeFrontendCharts() {
             }
         });
     }
+}
+
+/**
+ * Load client dashboard data and render UI components
+ */
+function loadClientDashboardData() {
+    loadPostCalendar();
+    loadPendingPosts();
+    loadUnreadMessages();
+    loadPrivateMessages();
+    loadClientSettings();
+}
+
+/**
+ * Load and render post content calendar
+ */
+function loadPostCalendar() {
+    $.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_get_post_calendar',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                renderPostCalendar(response.data.posts);
+            } else {
+                $('#smm-post-calendar').html('<p>Error loading calendar.</p>');
+            }
+        },
+        error: function() {
+            $('#smm-post-calendar').html('<p>Error loading calendar.</p>');
+        }
+    });
+}
+
+/**
+ * Render post content calendar (simple list for demo)
+ */
+function renderPostCalendar(posts) {
+    if (!posts || posts.length === 0) {
+        $('#smm-post-calendar').html('<p>No scheduled posts found.</p>');
+        return;
+    }
+    var html = '<ul class="smm-post-calendar-list">';
+    posts.forEach(function(post) {
+        html += '<li><strong>' + post.platform + '</strong>: ' + post.post_content + ' (Scheduled: ' + post.scheduled_time + ')</li>';
+    });
+    html += '</ul>';
+    $('#smm-post-calendar').html(html);
+}
+
+/**
+ * Load and render pending posts table
+ */
+function loadPendingPosts() {
+    $.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_get_pending_posts',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                renderPendingPostsTable(response.data.pending_posts);
+            } else {
+                $('#smm-pending-posts-table').html('<p>Error loading pending posts.</p>');
+            }
+        },
+        error: function() {
+            $('#smm-pending-posts-table').html('<p>Error loading pending posts.</p>');
+        }
+    });
+}
+
+/**
+ * Render pending posts table
+ */
+function renderPendingPostsTable(posts) {
+    if (!posts || posts.length === 0) {
+        $('#smm-pending-posts-table').html('<p>No pending posts found.</p>');
+        return;
+    }
+    var html = '<table class="smm-table"><thead><tr><th>Platform</th><th>Content</th><th>Scheduled Time</th><th>Actions</th></tr></thead><tbody>';
+    posts.forEach(function(post) {
+        html += '<tr>';
+        html += '<td>' + post.platform + '</td>';
+        html += '<td>' + post.post_content + '</td>';
+        html += '<td>' + post.scheduled_time + '</td>';
+        html += '<td><button class="smm-btn smm-btn-sm">View</button> <button class="smm-btn smm-btn-sm">Edit</button></td>';
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    $('#smm-pending-posts-table').html(html);
+}
+
+/**
+ * Load and render unread messages table
+ */
+function loadUnreadMessages() {
+    $.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_get_unread_messages',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                renderUnreadMessagesTable(response.data.unread_messages);
+            } else {
+                $('#smm-unread-messages-table').html('<p>Error loading unread messages.</p>');
+            }
+        },
+        error: function() {
+            $('#smm-unread-messages-table').html('<p>Error loading unread messages.</p>');
+        }
+    });
+}
+
+/**
+ * Render unread messages table
+ */
+function renderUnreadMessagesTable(messages) {
+    if (!messages || messages.length === 0) {
+        $('#smm-unread-messages-table').html('<p>No unread messages found.</p>');
+        return;
+    }
+    var html = '<table class="smm-table"><thead><tr><th>From</th><th>Subject</th><th>Date</th></tr></thead><tbody>';
+    messages.forEach(function(message) {
+        html += '<tr>';
+        html += '<td>' + message.sender_name + '</td>';
+        html += '<td>' + message.subject + '</td>';
+        html += '<td>' + message.created_at + '</td>';
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    $('#smm-unread-messages-table').html(html);
+}
+
+/**
+ * Load and render private messages section
+ */
+function loadPrivateMessages() {
+    $.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_get_private_messages',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                renderPrivateMessages(response.data.messages);
+            } else {
+                $('#smm-private-messages-section').html('<p>Error loading messages.</p>');
+            }
+        },
+        error: function() {
+            $('#smm-private-messages-section').html('<p>Error loading messages.</p>');
+        }
+    });
+}
+
+/**
+ * Render private messages
+ */
+function renderPrivateMessages(messages) {
+    if (!messages || messages.length === 0) {
+        $('#smm-private-messages-section').html('<p>No messages found.</p>');
+        return;
+    }
+    var html = '<div class="smm-messages-list">';
+    messages.forEach(function(message) {
+        html += '<div class="smm-message-item">';
+        html += '<strong>' + message.sender_name + '</strong><br>';
+        html += '<p>' + message.message_content + '</p>';
+        html += '<small>' + message.created_at + '</small>';
+        html += '</div>';
+    });
+    html += '</div>';
+    $('#smm-private-messages-section').html(html);
+}
+
+/**
+ * Load and render client settings form
+ */
+function loadClientSettings() {
+    $.ajax({
+        url: smm_ajax.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'smm_get_client_settings',
+            nonce: smm_ajax.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                renderClientSettingsForm(response.data.settings);
+            } else {
+                $('#smm-client-settings-section').html('<p>Error loading settings.</p>');
+            }
+        },
+        error: function() {
+            $('#smm-client-settings-section').html('<p>Error loading settings.</p>');
+        }
+    });
+}
+
+/**
+ * Render client settings form
+ */
+function renderClientSettingsForm(settings) {
+    var email = settings.email || '';
+    var html = '<form id="smm-client-settings-form">';
+    html += '<div class="smm-form-group">';
+    html += '<label for="client-email">Email</label>';
+    html += '<input type="email" id="client-email" name="email" value="' + email + '">';
+    html += '</div>';
+    html += '<div class="smm-form-group">';
+    html += '<label for="client-password">Password</label>';
+    html += '<input type="password" id="client-password" name="password" placeholder="Enter new password">';
+    html += '</div>';
+    html += '<button type="submit" class="smm-btn smm-btn-primary">Save Settings</button>';
+    html += '</form>';
+    $('#smm-client-settings-section').html(html);
+
+    $('#smm-client-settings-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        formData += '&action=smm_save_client_settings&nonce=' + smm_ajax.nonce;
+        $.ajax({
+            url: smm_ajax.ajax_url,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    showNotification('Settings saved successfully!', 'success');
+                } else {
+                    showNotification('Error saving settings.', 'error');
+                }
+            },
+            error: function() {
+                showNotification('Error saving settings.', 'error');
+            }
+        });
+    });
 }
 
 /**
