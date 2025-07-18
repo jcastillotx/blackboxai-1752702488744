@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Manager - Client Dashboard Demo</title>
+    <link rel="stylesheet" href="assets/css/frontend.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .demo-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .demo-header p {
+            color: #666;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎉 Social Media Manager Plugin - Client Dashboard</h1>
+            <p>Complete implementation with Welcome Section and Admin Interface</p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="smm-welcome-section">
+            <div class="smm-welcome-content" style="background-image: url('https://images.pexels.com/photos/3184321/pexels-photo-3184321.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
+                <div class="smm-welcome-overlay">
+                    <h2>Welcome, Acme Corporation!</h2>
+                    <p>We're excited to help you grow your social media presence! Your dedicated team has crafted a comprehensive strategy tailored specifically for your business goals. Let's make your brand shine across all platforms!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="smm-client-dashboard">
+            <div class="smm-client-header">
+                <h1>Your Dashboard</h1>
+                <p>Track your social media performance and strategy progress</p>
+            </div>
+            
+            <div class="smm-client-overview">
+                <div class="smm-overview-card">
+                    <h3>Strategy Status</h3>
+                    <div class="smm-status-indicator active">Active</div>
+                </div>
+                <div class="smm-overview-card">
+                    <h3>This Month's Posts</h3>
+                    <div class="smm-metric-large">24</div>
+                </div>
+                <div class="smm-overview-card">
+                    <h3>Total Engagement</h3>
+                    <div class="smm-metric-large">1,234</div>
+                </div>
+                <div class="smm-overview-card">
+                    <h3>New Followers</h3>
+                    <div class="smm-metric-large">+89</div>
+                </div>
+            </div>
+            
+            <div class="smm-client-content">
+                <div class="smm-content-section">
+                    <h2>📅 Post Content Calendar</h2>
+                    <div class="smm-calendar-list">
+                        <div class="smm-calendar-item">
+                            <div class="post-date">Dec 15, 2024</div>
+                            <div class="post-platform">INSTAGRAM</div>
+                            <div class="post-content">🌟 New product launch announcement with behind-the-scenes content showcasing our team's dedication...</div>
+                        </div>
+                        <div class="smm-calendar-item">
+                            <div class="post-date">Dec 16, 2024</div>
+                            <div class="post-platform">FACEBOOK</div>
+                            <div class="post-content">Customer success story featuring how our services helped increase their ROI by 150%...</div>
+                        </div>
+                        <div class="smm-calendar-item">
+                            <div class="post-date">Dec 17, 2024</div>
+                            <div class="post-platform">LINKEDIN</div>
+                            <div class="post-content">Industry insights: The future of digital marketing and how businesses can stay ahead...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="smm-content-section">
+                    <h2>⏳ Posts Awaiting Your Approval</h2>
+                    <div class="smm-pending-list">
+                        <div class="smm-pending-item">
+                            <div class="post-platform">TWITTER</div>
+                            <div class="post-content">🚀 Exciting news! We're launching our new service line next week. Stay tuned for exclusive early-bird offers for our valued community members...</div>
+                            <div class="post-actions">
+                                <button class="smm-btn smm-btn-sm smm-btn-primary">Approve</button>
+                                <button class="smm-btn smm-btn-sm">Request Changes</button>
+                            </div>
+                        </div>
+                        <div class="smm-pending-item">
+                            <div class="post-platform">INSTAGRAM</div>
+                            <div class="post-content">✨ Monday motivation: Success isn't just about what you accomplish in your life, it's about what you inspire others to do. #MondayMotivation #Success...</div>
+                            <div class="post-actions">
+                                <button class="smm-btn smm-btn-sm smm-btn-primary">Approve</button>
+                                <button class="smm-btn smm-btn-sm">Request Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="smm-content-section">
+                    <h2>💬 Recent Messages</h2>
+                    <div class="smm-messages-history">
+                        <div class="smm-message-item">
+                            <div class="message-header">
+                                <strong>Strategy Update</strong>
+                                <span class="message-date">Dec 14, 2024</span>
+                            </div>
+                            <div class="message-content">Hi! I've updated your content calendar for next week. The holiday campaign posts are ready for your review. Please let me know if you'd like any adjustments!</div>
+                        </div>
+                        <div class="smm-message-item">
+                            <div class="message-header">
+                                <strong>Performance Report</strong>
+                                <span class="message-date">Dec 12, 2024</span>
+                            </div>
+                            <div class="message-content">Great news! Your Instagram engagement is up 45% this month. The behind-the-scenes content is performing exceptionally well with your audience.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="smm-content-section">
+                    <h2>📊 Performance Analytics</h2>
+                    <div class="smm-analytics-widget">
+                        <canvas id="clientAnalyticsChart" width="400" height="200"></canvas>
+                        <div class="smm-analytics-summary">
+                            <div class="smm-metric-item">
+                                <span class="metric-label">Reach</span>
+                                <span class="metric-value">12.5K</span>
+                            </div>
+                            <div class="smm-metric-item">
+                                <span class="metric-label">Impressions</span>
+                                <span class="metric-value">45.2K</span>
+                            </div>
+                            <div class="smm-metric-item">
+                                <span class="metric-label">Engagement Rate</span>
+                                <span class="metric-value">4.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="smm-content-section">
+                    <h2>💬 Message Center</h2>
+                    <div class="smm-message-compose">
+                        <h4>Send a Message to Your Manager</h4>
+                        <form>
+                            <div class="smm-form-group">
+                                <label for="message-subject">Subject</label>
+                                <input type="text" id="message-subject" name="subject" placeholder="Enter message subject">
+                            </div>
+                            <div class="smm-form-group">
+                                <label for="message-content">Message</label>
+                                <textarea id="message-content" name="message_content" rows="4" placeholder="Type your message here..."></textarea>
+                            </div>
+                            <button type="submit" class="smm-btn smm-btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="smm-content-section">
+                    <h2>⚙️ Account Settings</h2>
+                    <form>
+                        <div class="smm-form-group">
+                            <label for="notification-email">Email Notifications</label>
+                            <input type="email" id="notification-email" name="email" placeholder="your@email.com" value="contact@acmecorp.com">
+                        </div>
+                        <div class="smm-form-group">
+                            <label for="timezone">Timezone</label>
+                            <select id="timezone" name="timezone">
+                                <option value="America/New_York" selected>Eastern Time</option>
+                                <option value="America/Chicago">Central Time</option>
+                                <option value="America/Denver">Mountain Time</option>
+                                <option value="America/Los_Angeles">Pacific Time</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="smm-btn smm-btn-secondary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize analytics chart
+        const ctx = document.getElementById('clientAnalyticsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Engagement',
+                    data: [12, 19, 15, 25, 22, 30],
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Demo button interactions
+        document.querySelectorAll('.smm-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.textContent === 'Approve') {
+                    e.preventDefault();
+                    this.textContent = 'Approved ✓';
+                    this.style.backgroundColor = '#27ae60';
+                    this.disabled = true;
+                } else if (this.textContent === 'Request Changes') {
+                    e.preventDefault();
+                    this.textContent = 'Changes Requested';
+                    this.style.backgroundColor = '#f39c12';
+                    this.disabled = true;
+                } else if (this.textContent === 'Send Message') {
+                    e.preventDefault();
+                    alert('Message sent successfully! (Demo)');
+                } else if (this.textContent === 'Save Settings') {
+                    e.preventDefault();
+                    alert('Settings saved successfully! (Demo)');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
