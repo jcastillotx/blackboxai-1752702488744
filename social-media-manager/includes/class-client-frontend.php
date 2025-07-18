@@ -36,6 +36,7 @@ class SMM_Client_Frontend {
     
     public function init() {
         // Initialize client frontend functionality
+        // This can be used to enqueue scripts or perform initialization tasks
     }
     
     public function render_intake_form($atts) {
