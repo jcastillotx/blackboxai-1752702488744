@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Manager - OAuth Connections Demo</title>
+    <link rel="stylesheet" href="assets/css/frontend.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .demo-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .demo-header p {
+            color: #666;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🔗 OAuth-Style Social Media Connections</h1>
+            <p>Simplified client interface - no manual token entry required!</p>
+        </div>
+
+        <div class="smm-content-section">
+            <h2>🔗 Connect Your Social Media Accounts</h2>
+            <div id="smm-social-accounts-section">
+                <div class="smm-accounts-grid">
+                    <!-- Facebook -->
+                    <div class="smm-account-card" data-platform="facebook">
+                        <div class="smm-account-header">
+                            <div style="display: flex; align-items: center;">
+                                <div class="smm-account-icon facebook-icon">📘</div>
+                                <h4>Facebook</h4>
+                            </div>
+                            <div class="smm-connection-status" id="facebook-status">
+                                <span class="status-indicator disconnected">●</span>
+                                <span class="status-text">Not Connected</span>
+                            </div>
+                        </div>
+                        <div class="smm-account-form" id="facebook-form">
+                            <div class="smm-connect-info">
+                                <p>Connect your Facebook account to allow us to manage your posts and analyze performance.</p>
+                                <ul class="smm-permissions-list">
+                                    <li>✓ Post content to your pages</li>
+                                    <li>✓ Read engagement metrics</li>
+                                    <li>✓ Manage posting schedule</li>
+                                </ul>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-primary smm-btn-connect" onclick="connectAccount('facebook')">
+                                <span class="connect-icon">🔗</span>
+                                Connect with Facebook
+                            </button>
+                        </div>
+                        <div class="smm-account-connected" id="facebook-connected" style="display: none;">
+                            <div class="connected-info">
+                                <p><strong>Connected as:</strong> <span id="facebook-username-display"></span></p>
+                                <p><strong>Connected on:</strong> <span id="facebook-date-display"></span></p>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-danger" onclick="disconnectAccount('facebook')">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="smm-account-card" data-platform="instagram">
+                        <div class="smm-account-header">
+                            <div style="display: flex; align-items: center;">
+                                <div class="smm-account-icon instagram-icon">📷</div>
+                                <h4>Instagram</h4>
+                            </div>
+                            <div class="smm-connection-status" id="instagram-status">
+                                <span class="status-indicator connected">●</span>
+                                <span class="status-text">Connected</span>
+                            </div>
+                        </div>
+                        <div class="smm-account-form" id="instagram-form" style="display: none;">
+                            <div class="smm-connect-info">
+                                <p>Connect your Instagram account to share photos, stories, and track engagement.</p>
+                                <ul class="smm-permissions-list">
+                                    <li>✓ Post photos and videos</li>
+                                    <li>✓ Manage Instagram stories</li>
+                                    <li>✓ View insights and analytics</li>
+                                </ul>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-primary smm-btn-connect" onclick="connectAccount('instagram')">
+                                <span class="connect-icon">📷</span>
+                                Connect with Instagram
+                            </button>
+                        </div>
+                        <div class="smm-account-connected" id="instagram-connected">
+                            <div class="connected-info">
+                                <p><strong>Connected as:</strong> @acme_corp</p>
+                                <p><strong>Connected on:</strong> Dec 14, 2024</p>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-danger" onclick="disconnectAccount('instagram')">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Twitter -->
+                    <div class="smm-account-card" data-platform="twitter">
+                        <div class="smm-account-header">
+                            <div style="display: flex; align-items: center;">
+                                <div class="smm-account-icon twitter-icon">🐦</div>
+                                <h4>Twitter / X</h4>
+                            </div>
+                            <div class="smm-connection-status" id="twitter-status">
+                                <span class="status-indicator disconnected">●</span>
+                                <span class="status-text">Not Connected</span>
+                            </div>
+                        </div>
+                        <div class="smm-account-form" id="twitter-form">
+                            <div class="smm-connect-info">
+                                <p>Connect your Twitter/X account to share updates and engage with your audience.</p>
+                                <ul class="smm-permissions-list">
+                                    <li>✓ Post tweets and threads</li>
+                                    <li>✓ Schedule content</li>
+                                    <li>✓ Monitor mentions and engagement</li>
+                                </ul>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-primary smm-btn-connect" onclick="connectAccount('twitter')">
+                                <span class="connect-icon">🐦</span>
+                                Connect with Twitter
+                            </button>
+                        </div>
+                        <div class="smm-account-connected" id="twitter-connected" style="display: none;">
+                            <div class="connected-info">
+                                <p><strong>Connected as:</strong> <span id="twitter-username-display"></span></p>
+                                <p><strong>Connected on:</strong> <span id="twitter-date-display"></span></p>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-danger" onclick="disconnectAccount('twitter')">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div class="smm-account-card" data-platform="linkedin">
+                        <div class="smm-account-header">
+                            <div style="display: flex; align-items: center;">
+                                <div class="smm-account-icon linkedin-icon">💼</div>
+                                <h4>LinkedIn</h4>
+                            </div>
+                            <div class="smm-connection-status" id="linkedin-status">
+                                <span class="status-indicator disconnected">●</span>
+                                <span class="status-text">Not Connected</span>
+                            </div>
+                        </div>
+                        <div class="smm-account-form" id="linkedin-form">
+                            <div class="smm-connect-info">
+                                <p>Connect your LinkedIn account to share professional content and network updates.</p>
+                                <ul class="smm-permissions-list">
+                                    <li>✓ Post professional updates</li>
+                                    <li>✓ Share company news</li>
+                                    <li>✓ Track professional engagement</li>
+                                </ul>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-primary smm-btn-connect" onclick="connectAccount('linkedin')">
+                                <span class="connect-icon">💼</span>
+                                Connect with LinkedIn
+                            </button>
+                        </div>
+                        <div class="smm-account-connected" id="linkedin-connected" style="display: none;">
+                            <div class="connected-info">
+                                <p><strong>Connected as:</strong> <span id="linkedin-username-display"></span></p>
+                                <p><strong>Connected on:</strong> <span id="linkedin-date-display"></span></p>
+                            </div>
+                            <button type="button" class="smm-btn smm-btn-danger" onclick="disconnectAccount('linkedin')">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="smm-account-settings">
+                    <h3>⚙️ Account Preferences</h3>
+                    <form id="smm-account-settings-form">
+                        <div class="smm-settings-grid">
+                            <div class="smm-form-group">
+                                <label for="email-notifications">Email Notifications</label>
+                                <select id="email-notifications" name="email_notifications">
+                                    <option value="all" selected>All notifications</option>
+                                    <option value="important">Important only</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div class="smm-form-group">
+                                <label for="timezone-setting">Timezone</label>
+                                <select id="timezone-setting" name="timezone">
+                                    <option value="America/New_York" selected>Eastern Time</option>
+                                    <option value="America/Chicago">Central Time</option>
+                                    <option value="America/Denver">Mountain Time</option>
+                                    <option value="America/Los_Angeles">Pacific Time</option>
+                                </select>
+                            </div>
+                            <div class="smm-form-group">
+                                <label for="posting-schedule">Preferred Posting Schedule</label>
+                                <select id="posting-schedule" name="posting_schedule">
+                                    <option value="business_hours" selected>Business Hours (9AM-5PM)</option>
+                                    <option value="peak_engagement">Peak Engagement Times</option>
+                                    <option value="custom">Custom Schedule</option>
+                                </select>
+                            </div>
+                            <div class="smm-form-group">
+                                <label for="auto-approve">Auto-approve Posts</label>
+                                <select id="auto-approve" name="auto_approve_posts">
+                                    <option value="no" selected>Require my approval</option>
+                                    <option value="yes">Auto-approve all posts</option>
+                                    <option value="trusted">Auto-approve from trusted content</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="smm-btn smm-btn-secondary">Save Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // OAuth-style connection functionality
+        function connectAccount(platform) {
+            // Show loading state
+            var button = document.querySelector('button[onclick="connectAccount(\'' + platform + '\')"]');
+            var originalText = button.innerHTML;
+            button.innerHTML = '<span class="connect-icon">⏳</span> Connecting...';
+            button.disabled = true;
+            
+            // Simulate OAuth flow with realistic delay
+            setTimeout(function() {
+                // Simulate successful connection
+                showNotification(platform.charAt(0).toUpperCase() + platform.slice(1) + ' account connected successfully!', 'success');
+                
+                // Update UI to show connected state
+                var statusElement = document.getElementById(platform + '-status');
+                var formElement = document.getElementById(platform + '-form');
+                var connectedElement = document.getElementById(platform + '-connected');
+                
+                statusElement.querySelector('.status-indicator').className = 'status-indicator connected';
+                statusElement.querySelector('.status-text').textContent = 'Connected';
+                
+                formElement.style.display = 'none';
+                connectedElement.style.display = 'block';
+                
+                // Update connected info
+                document.getElementById(platform + '-username-display').textContent = '@' + platform + '_user_demo';
+                document.getElementById(platform + '-date-display').textContent = new Date().toLocaleDateString();
+                
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000); // Simulate OAuth redirect delay
+        }
+        
+        function disconnectAccount(platform) {
+            if (!confirm('Are you sure you want to disconnect your ' + platform.charAt(0).toUpperCase() + platform.slice(1) + ' account?')) {
+                return;
+            }
+            
+            showNotification(platform.charAt(0).toUpperCase() + platform.slice(1) + ' account disconnected successfully!', 'success');
+            
+            // Update UI to show disconnected state
+            var statusElement = document.getElementById(platform + '-status');
+            var formElement = document.getElementById(platform + '-form');
+            var connectedElement = document.getElementById(platform + '-connected');
+            
+            statusElement.querySelector('.status-indicator').className = 'status-indicator disconnected';
+            statusElement.querySelector('.status-text').textContent = 'Not Connected';
+            
+            connectedElement.style.display = 'none';
+            formElement.style.display = 'block';
+        }
+        
+        function showNotification(message, type) {
+            var notification = document.createElement('div');
+            notification.className = 'smm-notification smm-notification-' + type;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(function() {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+                setTimeout(function() {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Handle settings form
+        document.getElementById('smm-account-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Account preferences saved successfully!', 'success');
+        });
+    </script>
+</body>
+</html>
