@@ -1,0 +1,35 @@
+SOCIAL MEDIA MANAGER PLUGIN - COMPLETE PACKAGE
+==============================================
+
+This package contains a complete WordPress plugin with:
+
+✅ Client Dashboard with Welcome Section
+✅ Admin Interface for Managing Welcome Messages
+✅ Database Schema with Welcome Message Support
+✅ Modern Responsive Design
+✅ Interactive Features and AJAX Functionality
+✅ Security Features (Nonces, Sanitization)
+✅ Professional Styling with Pexels Background Images
+
+INSTALLATION INSTRUCTIONS:
+1. Upload the entire 'social-media-manager' folder to /wp-content/plugins/
+2. Activate the plugin in WordPress Admin > Plugins
+3. Navigate to "Social Media Manager" in the admin menu
+4. Use the "Client Welcome" submenu to send welcome messages
+5. Add the shortcode [smm_client_dashboard] to any page for clients
+
+FEATURES INCLUDED:
+- Personalized client welcome messages
+- Interactive post approval system
+- Real-time analytics with Chart.js
+- Message center for client communication
+- Responsive design for all devices
+- Professional admin interface
+- Complete database management
+- Security and error handling
+
+DEMO:
+View demo-client-dashboard.html for a complete preview of the client dashboard.
+
+DOCUMENTATION:
+See README.md for detailed technical documentation.
