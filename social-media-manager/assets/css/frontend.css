@@ -232,3 +232,284 @@ body {
 .smm-notification.show {
     opacity: 1;
 }
+
+/* Welcome Section Styles */
+.smm-welcome-section {
+    margin-bottom: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.smm-welcome-content {
+    position: relative;
+    padding: 60px 30px;
+    color: #fff;
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.smm-welcome-overlay {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.smm-welcome-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.8), rgba(52, 152, 219, 0.8));
+    z-index: 1;
+}
+
+.smm-welcome-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.smm-welcome-content p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    margin: 0;
+    opacity: 0.95;
+}
+
+/* Enhanced Dashboard Styles */
+.smm-loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.smm-calendar-list {
+    display: grid;
+    gap: 15px;
+}
+
+.smm-calendar-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.smm-calendar-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.smm-calendar-item .post-date {
+    font-weight: 600;
+    color: #27ae60;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.smm-calendar-item .post-platform {
+    background: #27ae60;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.smm-calendar-item .post-content {
+    color: #555;
+    line-height: 1.4;
+}
+
+.smm-pending-list {
+    display: grid;
+    gap: 15px;
+}
+
+.smm-pending-item {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.smm-pending-item:hover {
+    background: #fff1b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.smm-pending-item .post-platform {
+    background: #f39c12;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.smm-pending-item .post-content {
+    color: #555;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.smm-pending-item .post-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.smm-analytics-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.smm-metric-item {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.smm-metric-item .metric-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.smm-metric-item .metric-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #27ae60;
+}
+
+.smm-message-compose {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.smm-message-compose h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.smm-messages-history {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.smm-message-item {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.smm-message-item:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.smm-message-item .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.smm-message-item .message-date {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.smm-message-item .message-content {
+    color: #555;
+    line-height: 1.5;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 30px;
+}
+
+.error-message {
+    text-align: center;
+    color: #e74c3c;
+    font-style: italic;
+    padding: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .smm-welcome-content {
+        padding: 40px 20px;
+        min-height: 150px;
+    }
+    
+    .smm-welcome-content h2 {
+        font-size: 2rem;
+    }
+    
+    .smm-welcome-content p {
+        font-size: 1rem;
+    }
+    
+    .smm-client-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .smm-client-overview {
+        flex-direction: column;
+    }
+    
+    .smm-overview-card {
+        margin: 5px 0;
+    }
+    
+    .smm-analytics-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .smm-welcome-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .smm-welcome-content p {
+        font-size: 0.9rem;
+    }
+}
